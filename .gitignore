@@ -1,0 +1,37 @@
+# ROS 2 / colcon
+ros2_ws/build/
+ros2_ws/install/
+ros2_ws/log/
+# Dependencies pulled with vcs (see ros2_ws/px4.repos)
+ros2_ws/src/px4_msgs/
+
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+.pytest_cache/
+.ruff_cache/
+.ipynb_checkpoints/
+
+# PlatformIO
+esp32_bridge/.pio/
+esp32_bridge/.vscode/
+
+# Flight data (keep only curated samples in data/samples/)
+*.ulg
+*.mcap
+*.db3
+rosbag2_*/
+results/
+
+# Editors / OS
+.vscode/*
+!.vscode/tasks.json
+!.vscode/extensions.json
+!.vscode/settings.json
+.idea/
+*.swp
+.DS_Store
+
+# Sinh tự động bởi tools/mission/gen_rice_field.py (scripts/setup_px4.sh chạy nó)
+simulation/models/rice_plot/

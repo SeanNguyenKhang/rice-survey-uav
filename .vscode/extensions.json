@@ -1,0 +1,13 @@
+{
+  // VS Code sẽ hỏi "Install recommended extensions?" khi mở thư mục này lần đầu → bấm Install.
+  "recommendations": [
+    "ms-vscode-remote.remote-wsl",
+    "ms-python.python",
+    "charliermarsh.ruff",
+    "ms-vscode.cpptools",
+    "redhat.vscode-yaml",
+    "bierner.markdown-mermaid",
+    "github.vscode-github-actions",
+    "eamodio.gitlens"
+  ]
+}

@@ -1,0 +1,185 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  X450 survey world: PX4 default world + rice field texture.
+  Origin set to the home point 10.5792937 N, 106.4161294 E (Thu Thua, Long An)
+  = take-off spot at the NW corner of the paddy (see tools/mission/field_site.py).
+-->
+<sdf version="1.9">
+  <world name="rice">
+    <physics type="ode">
+      <max_step_size>0.004</max_step_size>
+      <real_time_factor>1.0</real_time_factor>
+      <real_time_update_rate>250</real_time_update_rate>
+    </physics>
+    <gravity>0 0 -9.8</gravity>
+    <magnetic_field>6e-06 2.3e-05 -4.2e-05</magnetic_field>
+    <atmosphere type="adiabatic"/>
+
+    <!--
+      Systems. Because this world declares plugins, Gazebo IGNORES PX4's
+      src/modules/simulation/gz_bridge/server.config (GZ_SIM_SERVER_CONFIG_PATH),
+      so its whole list is repeated here. Keep it in sync if PX4 adds systems there.
+    -->
+    <plugin filename="gz-sim-physics-system" name="gz::sim::systems::Physics"/>
+    <plugin filename="gz-sim-user-commands-system" name="gz::sim::systems::UserCommands"/>
+    <plugin filename="gz-sim-scene-broadcaster-system" name="gz::sim::systems::SceneBroadcaster"/>
+    <plugin filename="gz-sim-contact-system" name="gz::sim::systems::Contact"/>
+    <plugin filename="gz-sim-imu-system" name="gz::sim::systems::Imu"/>
+    <plugin filename="gz-sim-air-pressure-system" name="gz::sim::systems::AirPressure"/>
+    <plugin filename="gz-sim-air-speed-system" name="gz::sim::systems::AirSpeed"/>
+    <plugin filename="gz-sim-apply-link-wrench-system" name="gz::sim::systems::ApplyLinkWrench"/>
+    <plugin filename="gz-sim-navsat-system" name="gz::sim::systems::NavSat"/>
+    <plugin filename="gz-sim-magnetometer-system" name="gz::sim::systems::Magnetometer"/>
+    <plugin filename="gz-sim-sensors-system" name="gz::sim::systems::Sensors">
+      <render_engine>ogre2</render_engine>
+    </plugin>
+    <plugin filename="libOpticalFlowSystem.so" name="custom::OpticalFlowSystem"/>
+    <plugin filename="libGstCameraSystem.so" name="custom::GstCameraSystem"/>
+
+    <!--
+      Wind. Mean wind = <wind> below (0 = calm); change it while flying with
+      scripts/wind.sh. WindEffects adds gusts on top of the mean wind and pushes
+      every link with <enable_wind>true</enable_wind> (x450 base_link).
+      MEASURED in Gazebo Harmonic 8.15 (free-floating box test, 2026-11-09):
+        F = c * mass * (v_wind - v_link),  c = k^2,  k = force_approximation_scaling_factor
+        (independent of altitude; k = 0.1 gives only c = 0.01 1/s!)
+      k = 0.55 -> c = 0.30 1/s -> ~2.0 N at 5 m/s for 1.34 kg (~8 deg tilt):
+      lumped linear drag typical of 1-1.5 kg quadrotors. Estimate, NOT measured
+      on the real X450 - calibrate if you get flight data.
+    -->
+    <plugin filename="gz-sim-wind-effects-system" name="gz::sim::systems::WindEffects">
+      <force_approximation_scaling_factor>0.55</force_approximation_scaling_factor>
+      <horizontal>
+        <magnitude>
+          <time_for_rise>5</time_for_rise>
+          <sin>
+            <amplitude_percent>0.2</amplitude_percent>
+            <period>8</period>
+          </sin>
+          <noise type="gaussian">
+            <mean>0</mean>
+            <stddev>0.1</stddev>
+          </noise>
+        </magnitude>
+        <direction>
+          <time_for_rise>10</time_for_rise>
+          <sin>
+            <amplitude>10</amplitude>
+            <period>25</period>
+          </sin>
+          <noise type="gaussian">
+            <mean>0</mean>
+            <stddev>0.05</stddev>
+          </noise>
+        </direction>
+      </horizontal>
+      <vertical>
+        <noise type="gaussian">
+          <mean>0</mean>
+          <stddev>0.05</stddev>
+        </noise>
+      </vertical>
+    </plugin>
+    <wind>
+      <linear_velocity>0 0 0</linear_velocity>
+    </wind>
+    <scene>
+      <grid>false</grid>
+      <ambient>0.4 0.4 0.4 1</ambient>
+      <background>0.7 0.7 0.7 1</background>
+      <shadows>true</shadows>
+    </scene>
+
+    <model name="ground_plane">
+      <static>true</static>
+      <link name="link">
+        <collision name="collision">
+          <pose>0 0 -5 0 0 0</pose>
+          <geometry>
+            <box>
+              <size>100000 100000 10</size>
+            </box>
+          </geometry>
+          <surface>
+            <friction>
+              <ode/>
+            </friction>
+            <bounce/>
+            <contact/>
+          </surface>
+        </collision>
+        <visual name="visual">
+          <geometry>
+            <plane>
+              <normal>0 0 1</normal>
+              <size>500 500</size>
+            </plane>
+          </geometry>
+          <material>
+            <!-- grass / bare soil around the paddy -->
+            <ambient>0.26 0.30 0.18 1</ambient>
+            <diffuse>0.36 0.42 0.25 1</diffuse>
+            <specular>0.05 0.05 0.05 1</specular>
+          </material>
+        </visual>
+        <pose>0 0 0 0 -0 0</pose>
+        <inertial>
+          <pose>0 0 0 0 -0 0</pose>
+          <mass>1</mass>
+          <inertia>
+            <ixx>1</ixx>
+            <ixy>0</ixy>
+            <ixz>0</ixz>
+            <iyy>1</iyy>
+            <iyz>0</iyz>
+            <izz>1</izz>
+          </inertia>
+        </inertial>
+        <enable_wind>false</enable_wind>
+      </link>
+      <pose>0 0 0 0 -0 0</pose>
+      <self_collide>false</self_collide>
+    </model>
+
+    <light name="sunUTC" type="directional">
+      <pose>0 0 500 0 -0 0</pose>
+      <cast_shadows>true</cast_shadows>
+      <intensity>1</intensity>
+      <!-- Sun at the survey time: 08:00 ICT, 10 Nov, 10.579 N 106.416 E
+           (NOAA formulas): elevation 29.4 deg, azimuth 116.6 deg (ESE).
+           direction = light travel in ENU = -(sun vector). Warm morning light. -->
+      <direction>-0.779 0.391 -0.491</direction>
+      <diffuse>0.95 0.90 0.80 1</diffuse>
+      <specular>0.271 0.271 0.271 1</specular>
+      <attenuation>
+        <range>2000</range>
+        <linear>0</linear>
+        <constant>1</constant>
+        <quadratic>0</quadratic>
+      </attenuation>
+      <spot>
+        <inner_angle>0</inner_angle>
+        <outer_angle>0</outer_angle>
+        <falloff>0</falloff>
+      </spot>
+    </light>
+
+    <spherical_coordinates>
+      <surface_model>EARTH_WGS84</surface_model>
+      <world_frame_orientation>ENU</world_frame_orientation>
+      <latitude_deg>10.5792937</latitude_deg>
+      <longitude_deg>106.4161294</longitude_deg>
+      <elevation>6</elevation>
+    </spherical_coordinates>
+
+    <!-- Bunds, roads, canal around the paddy (GENERATED: tools/mission/gen_field_env.py) -->
+    <include>
+      <uri>model://field_env</uri>
+    </include>
+
+    <!-- 3D rice plants in the paddy (GENERATED: tools/mission/gen_rice_field.py) -->
+    <include>
+      <uri>model://rice_plot</uri>
+    </include>
+  </world>
+</sdf>

@@ -1,0 +1,111 @@
+{
+  // Chạy: Ctrl+Shift+P → "Tasks: Run Task" → chọn task theo số thứ tự.
+  // Ctrl+Shift+B chạy thẳng task build ROS 2 (task mặc định).
+  "version": "2.0.0",
+  "options": {
+    "shell": { "executable": "/bin/bash", "args": ["-c"] }
+  },
+  "inputs": [
+    {
+      "id": "model",
+      "type": "pickString",
+      "description": "Chọn model Gazebo",
+      "options": ["gz_f450_cam_down", "gz_f450", "gz_x500"],
+      "default": "gz_f450_cam_down"
+    },
+    { "id": "windSpeed", "type": "promptString", "description": "Tốc độ gió trung bình [m/s]", "default": "3" },
+    { "id": "windFrom", "type": "promptString", "description": "Gió thổi TỪ hướng [độ]: 0 Bắc, 90 Đông", "default": "90" }
+  ],
+  "tasks": [
+    {
+      "label": "0. Kiểm tra môi trường",
+      "type": "shell",
+      "command": "./scripts/check_env.sh",
+      "problemMatcher": []
+    },
+    {
+      "label": "1. Mô phỏng SITL (Gazebo + QGC + Agent)",
+      "type": "shell",
+      "command": "./scripts/run_sitl.sh",
+      "options": { "env": { "MODEL": "${input:model}" } },
+      "isBackground": true,
+      "presentation": { "panel": "dedicated", "focus": true },
+      "problemMatcher": []
+    },
+    {
+      "label": "1b. Mô phỏng SITL không mở cửa sổ Gazebo",
+      "type": "shell",
+      "command": "./scripts/run_sitl.sh",
+      "options": { "env": { "MODEL": "${input:model}", "HEADLESS": "1" } },
+      "isBackground": true,
+      "presentation": { "panel": "dedicated", "focus": true },
+      "problemMatcher": []
+    },
+    {
+      "label": "2. ROS 2: tải px4_msgs",
+      "type": "shell",
+      "command": "vcs import src < px4.repos",
+      "options": { "cwd": "${workspaceFolder}/ros2_ws" },
+      "problemMatcher": []
+    },
+    {
+      "label": "3. ROS 2: build workspace",
+      "type": "shell",
+      "command": "source /opt/ros/jazzy/setup.bash && colcon build --symlink-install",
+      "options": { "cwd": "${workspaceFolder}/ros2_ws" },
+      "group": { "kind": "build", "isDefault": true },
+      "problemMatcher": ["$gcc"]
+    },
+    {
+      "label": "4. ROS 2: liệt kê topic PX4",
+      "type": "shell",
+      "command": "source /opt/ros/jazzy/setup.bash && source install/setup.bash && ros2 topic list | grep fmu",
+      "options": { "cwd": "${workspaceFolder}/ros2_ws" },
+      "problemMatcher": []
+    },
+    {
+      "label": "5. ROS 2: đọc vehicle_odometry",
+      "type": "shell",
+      "command": "source /opt/ros/jazzy/setup.bash && source install/setup.bash && ros2 topic echo /fmu/out/vehicle_odometry --once --qos-reliability best_effort",
+      "options": { "cwd": "${workspaceFolder}/ros2_ws" },
+      "problemMatcher": []
+    },
+    {
+      "label": "6. Build firmware PX4 cho Kakute H7 Mini",
+      "type": "shell",
+      "command": "make holybro_kakuteh7mini_default && ls build/holybro_kakuteh7mini_default/*.px4",
+      "options": { "cwd": "${env:HOME}/PX4-Autopilot" },
+      "problemMatcher": ["$gcc"]
+    },
+    {
+      "label": "A. Sinh lại thông số + model F450",
+      "type": "shell",
+      "command": "python3 tools/f450/gen_f450.py",
+      "problemMatcher": []
+    },
+    {
+      "label": "B. Liên kết model/world/airframe vào PX4",
+      "type": "shell",
+      "command": "./scripts/setup_px4.sh",
+      "problemMatcher": []
+    },
+    {
+      "label": "C. Sinh mission zig-zag (6 m, 1.5 m/s)",
+      "type": "shell",
+      "command": "python3 tools/mission/gen_lawnmower.py",
+      "problemMatcher": []
+    },
+    {
+      "label": "D. Đặt gió (đang chạy mô phỏng)",
+      "type": "shell",
+      "command": "./scripts/wind.sh ${input:windSpeed} ${input:windFrom}",
+      "problemMatcher": []
+    },
+    {
+      "label": "Lint Python (ruff)",
+      "type": "shell",
+      "command": "ruff check .",
+      "problemMatcher": []
+    }
+  ]
+}

@@ -1,0 +1,9 @@
+line-length = 120
+target-version = "py312"
+
+[lint]
+select = ["E", "F", "W", "I", "B"]
+
+[lint.per-file-ignores]
+# Mã chép từ x450_sim: viết gọn kiểu script phân tích, chưa dọn phong cách.
+"analysis/analyze_flight.py" = ["E702", "E731", "E501", "B905"]

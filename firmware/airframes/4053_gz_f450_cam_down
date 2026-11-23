@@ -1,0 +1,10 @@
+#!/bin/sh
+#
+# @name Gazebo F450 test camera down
+#
+# @type Quadrotor
+#
+
+PX4_SIM_MODEL=${PX4_SIM_MODEL:=f450_cam_down}
+
+. ${R}etc/init.d-posix/airframes/4052_gz_f450
