@@ -24,6 +24,7 @@ Usage:
 import argparse
 import json
 import math
+import sys
 from pathlib import Path
 
 import matplotlib
@@ -31,11 +32,12 @@ import matplotlib
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 import numpy as np
-from field_site import latlon_to_enu
 from pyulog import ULog
 
 REPO = Path(__file__).resolve().parents[1]
-LOG_DIR = Path.home() / "PX4-Autopilot/build/px4_sitl_default/rootfs/fs/log"
+sys.path.insert(0, str(REPO / "tools" / "mission"))   # field_site.py
+from field_site import latlon_to_enu  # noqa: E402
+LOG_DIR = Path.home() / "PX4-Autopilot/build/px4_sitl_default/rootfs/log"
 REQ = {"pos_rmse": 0.5, "att_err": 5.0, "overshoot": 15.0, "settling": 2.0}   # thesis requirements
 NAV_MISSION = 3
 END_TRIM = 5.0       # metres ignored at both ends of every survey line (turns)

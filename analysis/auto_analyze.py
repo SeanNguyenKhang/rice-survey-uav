@@ -28,7 +28,7 @@ from pathlib import Path
 
 HERE = Path(__file__).resolve().parent
 REPO = HERE.parent
-LOG_DIR = Path.home() / "PX4-Autopilot/build/px4_sitl_default/rootfs/fs/log"
+LOG_DIR = Path.home() / "PX4-Autopilot/build/px4_sitl_default/rootfs/log"
 
 
 def parse_args():
