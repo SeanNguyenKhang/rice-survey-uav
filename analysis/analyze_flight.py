@@ -37,6 +37,7 @@ from pyulog import ULog
 REPO = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(REPO / "tools" / "mission"))   # field_site.py
 from field_site import latlon_to_enu  # noqa: E402
+
 LOG_DIR = Path.home() / "PX4-Autopilot/build/px4_sitl_default/rootfs/log"
 REQ = {"pos_rmse": 0.5, "att_err": 5.0, "overshoot": 15.0, "settling": 2.0}   # thesis requirements
 NAV_MISSION = 3
