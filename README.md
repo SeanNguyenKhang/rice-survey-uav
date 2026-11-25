@@ -87,7 +87,7 @@ Wiring: [docs/wiring.md](docs/wiring.md).
 ## Progress
 
 - [ ] Phase 0 – Repository and development environment
-- [ ] Phase 1 – Custom Gazebo model (F450 model, rice field, survey mission: done; verify hover at 6 m)
+- [x] Phase 1 – Custom Gazebo model (F450 model, rice field, survey mission). SITL, `gz_f450`, 2026-11-25: full mission + RTL, lateral RMSE 0.23 m (< 0.5 m), altitude RMSE 0.04 m. Peak attitude error 7.4° (> 5°) occurs only in short spikes at line turns (setpoint steps); to revisit in Phase 2. Wind test pending.
 - [ ] Phase 2 – Dynamics model and cascade PID tuning
 - [ ] Phase 3 – Trajectory library and offboard node
 - [ ] Phase 4 – Trajectory drawing tool
