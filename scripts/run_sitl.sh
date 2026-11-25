@@ -37,6 +37,9 @@ fi
 
 if [[ "$MODEL" != gz_x500 ]]; then "$(dirname "${BASH_SOURCE[0]}")/setup_px4.sh"; fi
 
+# Sau khi hạ cánh (disarm) tự phân tích log bay -> results/<giờ bay>/ (tự thoát khi script này kết thúc)
+python3 "$(dirname "${BASH_SOURCE[0]}")/../analysis/auto_analyze.py" --pid $$ > "$LOG_DIR/auto_analyze.log" 2>&1 &
+
 echo ">> PX4 SITL, model $MODEL, world $PX4_GZ_WORLD"
 cd "$PX4_DIR"
 if [ "${HEADLESS:-0}" = "1" ]; then export HEADLESS=1; fi
