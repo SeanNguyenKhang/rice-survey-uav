@@ -5,6 +5,9 @@
 #             HEADLESS=1 ./scripts/run_sitl.sh               (không mở cửa sổ Gazebo)
 set -euo pipefail
 
+# VS Code cài bằng snap làm cửa sổ Gazebo/QGC chết ngay khi mở – gỡ biến môi trường của snap
+. "$(dirname "${BASH_SOURCE[0]}")/snap_env_fix.sh"
+
 PX4_DIR="${PX4_DIR:-$HOME/PX4-Autopilot}"
 MODEL="${MODEL:-gz_f450_cam_down}"
 export PX4_GZ_WORLD="${WORLD:-rice}"
