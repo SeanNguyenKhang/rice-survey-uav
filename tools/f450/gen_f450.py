@@ -221,6 +221,7 @@ def model_sdf(m, cg, J):
     <self_collide>false</self_collide>
     <static>false</static>
     <link name="base_link">
+      <enable_wind>true</enable_wind>   <!-- để scripts/wind.sh (WindEffects) đẩy được drone -->
       <inertial>
         <pose>{cg[0]:.5f} {cg[1]:.5f} {cg[2]:.5f} 0 0 0</pose>
         <mass>{m:.4f}</mass>

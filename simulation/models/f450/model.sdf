@@ -6,6 +6,7 @@
     <self_collide>false</self_collide>
     <static>false</static>
     <link name="base_link">
+      <enable_wind>true</enable_wind>   <!-- để scripts/wind.sh (WindEffects) đẩy được drone -->
       <inertial>
         <pose>-0.00156 0.00000 -0.00642 0 0 0</pose>
         <mass>1.0190</mass>
